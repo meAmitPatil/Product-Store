@@ -1,8 +1,11 @@
 import Product from "../models/product.model.js"
 
 export const getProducts = async(req, res) => {
+    const { search } = req.query;
+
     try{
-        const products = await Product.find({})
+        const query = search ? { name: { $regex: search, $options: 'i' } } : {};
+        const products = await Product.find(query)
         res.status(200).json({ success:true, data:products, message: 'Products fetched successfully' });
     } catch (error) {
         console.status("Error in Get products:", error.message);
@@ -10,20 +13,6 @@ export const getProducts = async(req, res) => {
     }
 }
 
-export const getProductById = async(req, res) => {
-    const {id} = req.params
-
-    try{
-        const product = await Product.findById(id)
-        if (!product) {
-            return res.status(404).json({ success:false, message: 'Product not found' })
-        }
-        res.status(200).json({ success:true, data:product, message: 'Product fetched successfully' });
-    } catch (error) {
-        console.status("Error in Get product:", error.message);
-        res.status(500).json({ success:false, message: error.message });
-    }
-}
 
 export const createProducts = async(req, res) => {
     const product = req.body
