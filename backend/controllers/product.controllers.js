@@ -2,22 +2,25 @@ import Product from "../models/product.model.js"
 
 export const getProducts = async(req, res) => {
     const { search } = req.query;
+    const userId = req.query.userId;
 
     try{
-        const query = search ? { name: { $regex: search, $options: 'i' } } : {};
+        const query = {
+            ...(search ? { name: { $regex: search, $options: 'i' } } : {}),
+            userId: userId
+        };
         const products = await Product.find(query)
         res.status(200).json({ success:true, data:products, message: 'Products fetched successfully' });
     } catch (error) {
-        console.status("Error in Get products:", error.message);
+        console.error("Error in Get products:", error.message);
         res.status(500).json({ success:false, message: error.message });
     }
 }
 
-
 export const createProducts = async(req, res) => {
     const product = req.body
 
-    if (!product.name || !product.price|| !product.image) {
+    if (!product.name || !product.price|| !product.image || !product.userId) {
         return res.status(400).json({ success:false, message: 'Please add all fields' })
     }
 
@@ -27,7 +30,7 @@ export const createProducts = async(req, res) => {
         await newProduct.save()
         res.status(201).json({ success:true, data:newProduct, message: 'Product added successfully' });
     } catch (error) {
-        console.status("Error in Create product:", error.message);
+        console.error("Error in Create product:", error.message);
         res.status(500).json({ success:false, message: error.message });
     }
 }

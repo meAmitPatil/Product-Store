@@ -18,7 +18,11 @@ const productSchema = new mongoose.Schema({
   },
   brand:{
     type: String,
-  },  
+  },
+  userId: {
+    type: String,
+    required: true,
+  },
 }, {
     timestamps: true
 });

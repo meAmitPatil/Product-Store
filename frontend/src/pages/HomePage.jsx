@@ -1,35 +1,41 @@
 import { Container, SimpleGrid, Text, VStack, Input } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import axios from 'axios';
 import ProductCard from "../components/ProductCard";
+import { useUser } from '@clerk/clerk-react';
 
 const HomePage = () => {
+	const { user } = useUser();
 	const [searchQuery, setSearchQuery] = useState('');
 	const [filteredProducts, setFilteredProducts] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 
-	const fetchProducts = async (query = '') => {
+	const fetchProducts = useCallback(async (query = '') => {
 		setLoading(true);
 		setError(null);
 		try {
-			const response = await axios.get(`/api/products?search=${query}`);
+			const response = await axios.get(`/api/products?search=${query}&userId=${user?.id}`);
 			setFilteredProducts(response.data.data);
 		} catch (err) {
 			setError(err.message);
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, [user?.id]);
 
 	useEffect(() => {
-		fetchProducts();
-	}, []);
+		if (user) {
+			fetchProducts();
+		}
+	}, [user, fetchProducts]);
 
 	useEffect(() => {
-		fetchProducts(searchQuery);
-	}, [searchQuery]);
+		if (user) {
+			fetchProducts(searchQuery);
+		}
+	}, [searchQuery, user, fetchProducts]);
 
 	const handleInputChange = (e) => {
 		setSearchQuery(e.target.value);

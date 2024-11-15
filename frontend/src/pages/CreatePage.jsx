@@ -1,14 +1,17 @@
 import { Box, Button, Container, Heading, Input, useColorModeValue, useToast, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 import { useProductStore } from "../store/product";
+import { useUser } from '@clerk/clerk-react';
 
 const CreatePage = () => {
+	const { user } = useUser();
 	const [newProduct, setNewProduct] = useState({
 		name: "",
 		price: "",
 		image: "",
 		category: "",
 		brand: "",
+		userId: user?.id || "",
 	});
 	const toast = useToast();
 
@@ -31,7 +34,7 @@ const CreatePage = () => {
 				isClosable: true,
 			});
 		}
-		setNewProduct({ name: "", price: "", image: "", category: "", brand: "" });
+		setNewProduct({ name: "", price: "", image: "", category: "", brand: "", userId: user?.id || "" });
 	};
 
 	return (
