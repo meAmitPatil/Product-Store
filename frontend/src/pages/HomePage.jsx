@@ -1,6 +1,6 @@
 import { Container, SimpleGrid, Text, VStack, Input } from "@chakra-ui/react";
 import { useEffect, useState, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import ProductCard from "../components/ProductCard";
 import { useUser } from '@clerk/clerk-react';
@@ -11,6 +11,7 @@ const HomePage = () => {
 	const [filteredProducts, setFilteredProducts] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
+	const navigate = useNavigate();
 
 	const fetchProducts = useCallback(async (query = '') => {
 		setLoading(true);
@@ -39,6 +40,10 @@ const HomePage = () => {
 
 	const handleInputChange = (e) => {
 		setSearchQuery(e.target.value);
+	};
+
+	const handleEdit = (product) => {
+		navigate('/create', { state: { product } });
 	};
 
 	return (
@@ -75,7 +80,7 @@ const HomePage = () => {
 					w={"full"}
 				>
 					{filteredProducts.map((product) => (
-						<ProductCard key={product._id} product={product} />
+						<ProductCard key={product._id} product={product} onEdit={handleEdit} fetchProducts={fetchProducts} />
 					))}
 				</SimpleGrid>
 
